@@ -11,7 +11,7 @@ instance Seq [] where
     filterS     = filter
     appendS     = undefined
     takeS       = undefined
-    dropS       = drop
+    dropS       = undefined
     showtS      = undefined
     showlS      = undefined
     joinS       = undefined

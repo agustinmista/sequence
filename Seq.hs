@@ -22,3 +22,12 @@ class Seq s where
 
 data TreeView a t = EMPTY | ELT a | NODE t t
 data ListView a t = NIL | CONS a t
+
+instance (Show a, Show t) => Show (TreeView a t) where
+    show EMPTY = "EMPTY"
+    show (ELT a) = "ELT " ++ show a
+    show (NODE t1 t2) = "NODE " ++ show t1 ++ " " ++ show t2
+    
+instance (Show a, Show t) => Show (ListView a t) where
+    show NIL = "NIL"
+    show (CONS a t) = "CONS " ++ show a ++ " : " ++ show t

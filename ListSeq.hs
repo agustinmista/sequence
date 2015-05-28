@@ -16,8 +16,8 @@ instance Seq [] where
     showlS      = showlL
     joinS       = joinL
     reduceS     = reduceL
-    scanS       = undefined
-    fromList    = undefined
+    scanS       = scanL
+    fromList    = id
    
     
 singletonL :: a -> [a]
@@ -42,7 +42,8 @@ dropL l n = drop n l
 showtL :: [a] -> TreeView a [a]
 showtL []   = EMPTY
 showtL [x]  = ELT x
-showtL xs   = NODE (take ((length xs) `div` 2) (xs)) (drop ((length xs) `div` 2) (xs))
+showtL xs   = NODE  (take ((length xs) `div` 2) (xs))
+                    (drop ((length xs) `div` 2) (xs))
 
 showlL :: [a] -> ListView a [a]
 showlL [] = NIL
@@ -53,8 +54,20 @@ joinL [] = []
 joinL (x:xs) = x ++ joinL xs
 
 reduceL :: (a -> a -> a) -> a -> [a] -> a
-reduceL f e [] = e
+reduceL f e []  = e
 reduceL f e [x] = f e x 
-reduceL f e (x:y:xs) = let (l, r) = (f x y) ||| (reduceL f e xs) in f l r
+reduceL f e xs  = let (lReduced, rReduced) = reduceL f e left ||| reduceL f e right
+                  in f lReduced rReduced 
+                    where left  = tvl (showtL xs)
+                          right = tvr (showtL xs)
 
-s = emptyS :: [] Int
+
+scanL :: (a -> a -> a) -> a -> [a] -> ([a], a)
+scanL f e []  = ([], e)
+scanL f e [x] = ([e], f e x)
+scanL f e xs  = let (lScan, rScan) = scanL f e left ||| scanL f e right 
+                in  let r = f (snd lScan) (snd rScan) 
+                    in  ((fst lScan) , r)
+                             where left  = tvl (showtL xs)
+                                   right = tvr (showtL xs)
+

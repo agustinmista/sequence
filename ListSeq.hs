@@ -1,5 +1,6 @@
 import Seq
 import Par
+import Debug.Trace
 
 instance Seq [] where
     emptyS      = []
@@ -53,21 +54,24 @@ joinL :: [[a]] -> [a]
 joinL [] = []
 joinL (x:xs) = x ++ joinL xs
 
+contract :: (a -> a -> a) -> [a] -> [a]
+contract f []  = []
+contract f [x] = [x]
+contract f (x:y:xs) = (f x y) : (contract f xs)
+
+combine :: (a -> a -> a) -> [a] -> [a] -> Bool -> [a]
+combine _ [] _ _ = []
+combine f s@(_:_)   c@(x':xs')  True    = x' : (combine f s c False)
+combine f [_]       (_:_)       False   = []
+combine f (x:_:xs)  (x':xs')    False   = (f x' x) : (combine f xs xs' True)
+
 reduceL :: (a -> a -> a) -> a -> [a] -> a
 reduceL f e []  = e
 reduceL f e [x] = f e x 
-reduceL f e xs  = let (lReduced, rReduced) = reduceL f e left ||| reduceL f e right
-                  in f lReduced rReduced 
-                    where left  = tvl (showtL xs)
-                          right = tvr (showtL xs)
-
+reduceL f e xs  = reduceL f e (contract f xs)
 
 scanL :: (a -> a -> a) -> a -> [a] -> ([a], a)
 scanL f e []  = ([], e)
 scanL f e [x] = ([e], f e x)
-scanL f e xs  = let (lScan, rScan) = scanL f e left ||| scanL f e right 
-                in  let r = f (snd lScan) (snd rScan) 
-                    in  ((fst lScan) , r)
-                             where left  = tvl (showtL xs)
-                                   right = tvr (showtL xs)
-
+scanL f e xs  = let (s', reduced) = scanL f e (contract f xs)
+                    in (combine f xs s' True, reduced)

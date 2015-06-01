@@ -15,8 +15,8 @@ instance Seq A.Arr where
     appendS     = appendA
     takeS       = takeA
     dropS       = dropA
-    showtS      = undefined
-    showlS      = undefined
+    showtS      = showtA
+    showlS      = showlA
     joinS       = A.flatten
     reduceS     = undefined
     scanS       = undefined
@@ -47,4 +47,12 @@ takeA a s = A.tabulate (\x->(a!x)) s
 dropA :: A.Arr a -> Int -> A.Arr a
 dropA a s = A.tabulate (\x->(a!(x + s))) (A.length a - s)
 
-
+showtA :: A.Arr a -> TreeView a (A.Arr a)
+showtA a | size == 0    = EMPTY
+         | size == 1    = ELT (a!0)
+         | otherwise    = NODE (takeA a (size `div` 2)) (dropA a (size `div` 2)) 
+            where size = A.length a
+            
+showlA :: A.Arr a -> ListView a (A.Arr a)
+showlA a | A.length a == 0  = NIL
+         | otherwise        = CONS (a!0) (dropA a 1)

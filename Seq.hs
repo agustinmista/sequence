@@ -20,7 +20,7 @@ class Seq s where
    scanS      :: (a -> a -> a) -> a -> s a -> (s a, a)
    fromList   :: [a] -> s a
 
-data TreeView a t = EMPTY | ELT a | NODE { tvl :: t, tvr :: t }
+data TreeView a t = EMPTY | ELT a | NODE t t
 data ListView a t = NIL | CONS a t
 
 instance (Show a, Show t) => Show (TreeView a t) where

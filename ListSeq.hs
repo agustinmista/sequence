@@ -48,8 +48,9 @@ dropL l n = Prelude.drop n l
 showtL :: [a] -> TreeView a [a]
 showtL []   = EMPTY
 showtL [x]  = ELT x
-showtL xs   = NODE (take (size `div` 2) (xs)) (drop (size `div` 2) (xs)) 
-                where size = length xs
+showtL xs   = NODE l r 
+                where (l, r) = (take n xs) ||| (drop n xs) 
+                      n = ((length xs) `div` 2)
 
 showlL :: [a] -> ListView a [a]
 showlL [] = NIL

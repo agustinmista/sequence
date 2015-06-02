@@ -50,8 +50,11 @@ dropA a s = Arr.tabulate (\x->(a!(x + s))) (Arr.length a - s)
 showtA :: Arr a -> TreeView a (Arr a)
 showtA a | size == 0    = EMPTY
          | size == 1    = ELT (a!0)
-         | otherwise    = NODE (takeA a (size `div` 2)) (dropA a (size `div` 2)) 
+         | otherwise    = NODE l r  
             where size = Arr.length a
+				  n = size `div` 2
+				  (l, r) = takeA a n ||| dropA a n
+
             
 showlA :: A.Arr a -> ListView a (A.Arr a)
 showlA a | A.length a == 0  = NIL

@@ -60,20 +60,75 @@
 \pagebreak
 \part*{Implementación con listas}
 	\section*{\Large filterS}
+		Para implementar la función \texttt{filterS}, consideramos la función \texttt{filter} presente en el preludio,
+		y paralelizamos el llamado recursivo para mejorar el rendimiento si los predicados que \texttt{filterS} evalúa
+		son costosos de calcular.
+		Luego podemos considerar a \texttt{filterS} como la siguiente recurrencia:
+		
+		\begin{equation*}
+			T\left( n \right) = T\left( n-1 \right) + f\left( n \right)
+		\end{equation*}		
+		
+		Donde $f(n)$ es el costo de evaluar cada predicado, además del costo de las comparaciones, que consideramos constantes.
+		Puede verse que en esta implementación, el paralelizar las operaciones no mejora el problema de tener que recorrer todo
+		el arreglo de forma secuencial. Resolviendo la recurrencia tenemos entonces:
+		
+		\begin{equation*}
+			W\left( filterS \oplus s \right) \in O\left( \vert s \vert + \sum_{i=0}^{\vert s\vert -1} W \left( f\left( i\right) \right) \right)
+		\end{equation*}		
+		
+		\begin{equation*}
+			S\left( filterS \oplus s \right) \in O\left( \vert s \vert + \max_{i=0}^{\vert s\vert -1}\left( S \left( f\left( i\right) \right) \right)\right)
+		\end{equation*}		
 	
+	
+		Finalmente, si consideramos que $f(n) \in O(1)$ resulta:
+		
+		\begin{equation*}
+			W\left( filterS \oplus s \right) \in O\left( n \right)
+		\end{equation*}		
+		
+		\begin{equation*}
+			S\left( filterS \oplus s \right) \in O\left( n \right)
+		\end{equation*}		
+		 	
 	\section*{\Large showtS}
+		Para el caso de \texttt{showtS}, la implementación mediante listas es poco eficiente dado que para poder partir la lista
+		en dos mitades en el caso de que existan dos o más elementos, se necesita conocer el tamaño de la misma, lo cual resulta en un
+		coste lineal tanto para el trabajo como para la profundidad. Por lo tanto:
+	
+		\begin{equation*}
+			W\left( showtS \oplus s \right) \in O\left( n \right)
+		\end{equation*}		
+		
+		\begin{equation*}
+			S\left( showtS \oplus s \right) \in O\left( n \right)
+		\end{equation*}	
 	
 	\section*{\Large redusceS}
+	
+	
 	
 	\section*{\Large scanS}
 	
+	
+	
+	
+	
 \pagebreak	
 \part*{Implementación con arreglos persistentes}
+
 	\section*{\Large filterS}
+	
+	
 	
 	\section*{\Large showtS}
 	
+	
+	
 	\section*{\Large redusceS}
+	
+	
 	
 	\section*{\Large scanS}
 

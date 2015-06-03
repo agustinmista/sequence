@@ -3,7 +3,7 @@ module ArrSeq where
 import Arr
 import Seq
 import Par
-
+    
 instance Seq Arr where
     emptyS      = Arr.fromList []
     singletonS  = singletonA
@@ -29,39 +29,34 @@ mapA :: (a -> b) -> Arr a -> Arr b
 mapA f a = Arr.tabulate (\x->(f (a!x))) (Arr.length a)
 
 filterA :: (a -> Bool) -> Arr a -> Arr a
-filterA p a	| size == 0 = emptyS
-            | size == 1 = if (p (a!0)) then singletonA (a!0) else emptyS
-            | otherwise = appendA filterL filterR
+filterA p a    = flatten  $ tabulate f size
                 where size = Arr.length a
-                      (filterL, filterR) = (filterA p (takeA a (size `div` 2))) ||| (filterA p (dropA a (size `div` 2)))
-
+                      f x = if p (a!x) 
+                            then singletonA (a!x)
+                            else emptyS
 
 appendA :: Arr a -> Arr a -> Arr a
-appendA a b = Arr.tabulate (\x-> if x < sa then a!x else b!(x-sa)) (sa + sb)
-              where sa = Arr.length a   
-                    sb = Arr.length b
+appendA a b = flatten (Arr.fromList [a, b])
 
 takeA :: Arr a -> Int -> Arr a
-takeA a s = Arr.tabulate (\x->(a!x)) s
+takeA a n = subArray 0 n a
 
 dropA :: Arr a -> Int -> Arr a
-dropA a s = Arr.tabulate (\x->(a!(x + s))) (Arr.length a - s)
+dropA a n = let size = Arr.length a in subArray n (size - n) a
 
 showtA :: Arr a -> TreeView a (Arr a)
 showtA a | size == 0    = EMPTY
          | size == 1    = ELT (a!0)
          | otherwise    = NODE l r  
             where size = Arr.length a
-				  n = size `div` 2
-				  (l, r) = takeA a n ||| dropA a n
+                  n = size `div` 2
+                  l = subArray 0 n a 
+                  r = subArray n (size - n) a
 
             
-showlA :: A.Arr a -> ListView a (A.Arr a)
-showlA a | A.length a == 0  = NIL
-         | otherwise        = CONS (a!0) (dropA a 1)
 showlA :: Arr a -> ListView a (Arr a)
 showlA a | Arr.length a == 0  = NIL
-         | otherwise          = CONS (a!0) (dropA a 1)
+         | otherwise        = CONS (a!0) (dropA a 1)
 
 reduceA :: (a -> a -> a) -> a -> Arr a -> a
 reduceA f e a | size == 0   = e

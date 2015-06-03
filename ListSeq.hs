@@ -74,10 +74,12 @@ scanL f e xs  = (combine True f xs partial, reduced)
 contract :: (a -> a -> a) -> [a] -> [a]
 contract f []  = []
 contract f [x] = [x]
-contract f (x:y:xs) = (f x y) : (contract f xs)
+contract f (x:y:xs) = l:r
+                        where (l, r) = (f x y) ||| (contract f xs)
 
 combine :: Bool -> (a -> a -> a) -> [a] -> [a] -> [a]
 combine _ _ [] _ = []
 combine True  f s@(_:_)   c@(x:_)   = x : (combine False f s c)
 combine False f [_]       (_:_)     = []
-combine False f (x:_:xs)  (x':xs')  = (f x' x) : (combine True f xs xs')
+combine False f (x:_:xs)  (x':xs')  = l:r
+                                        where (l, r) = (f x' x) ||| (combine True f xs xs')
